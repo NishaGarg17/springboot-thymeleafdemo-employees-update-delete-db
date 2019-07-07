@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.nisha.springboot.thymeleafdemo.entity.Employee;
 import com.nisha.springboot.thymeleafdemo.service.EmployeeService;
@@ -33,10 +34,22 @@ public class EmployeeController {
 	
 	// add mapping to show form for add
 	@GetMapping("/showFormForAdd")
-	public String showFromForAdd(Model model) {
+	public String showFormForAdd(Model model) {
 		// create model attribute to bind form data
 		Employee employee = new Employee();
 		model.addAttribute("employee", employee);
+		return "employees/employee-form";
+	}
+	@GetMapping("/showFormForUpdate")
+	public String showFormForUpdate(@RequestParam("employeeId") int empId, Model model) {
+		// get the employee from the Service
+		Employee employee = employeeService.findById(empId);
+		
+		// set employee as model attribute to pre populate the form
+		
+		model.addAttribute("employee", employee);
+		
+		// send over to our form
 		return "employees/employee-form";
 	}
 	
@@ -47,6 +60,16 @@ public class EmployeeController {
 			employeeService.save(theEmployee);
 			
 			// use a redirect to prevent duplicate submissions
+			return "redirect:/employees/list";
+		}
+		
+		// add get mappping for delete
+		@GetMapping("/delete")
+		public String deleteEmployee(@RequestParam("employeeId") int empId) {
+			// delete the employee
+			employeeService.deleteById(empId);
+			
+			// send over to our form
 			return "redirect:/employees/list";
 		}
 }
